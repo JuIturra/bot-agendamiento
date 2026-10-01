@@ -53,6 +53,7 @@ Las variables definidas en el entorno tienen prioridad sobre `.env`.
 | Variable | Para qué |
 |---|---|
 | `GOOGLE_APPLICATION_CREDENTIALS` | Ruta al JSON de la cuenta de servicio, p. ej. `secrets/google-sa.json` |
+| `GOOGLE_CREDENTIALS_JSON` | El contenido del JSON, para Railway (tiene prioridad) |
 | `GOOGLE_CALENDAR_ID` | Calendario del negocio; pisa `google_calendar_id` del YAML |
 
 `make calendar-check` verifica la configuración. Paso a paso en
@@ -63,6 +64,11 @@ Las variables definidas en el entorno tienen prioridad sobre `.env`.
 Con `CODIGO_DUENO=<secreto>` en `.env`, el dueño le escribe al bot `/dueno <secreto>` y
 desde ahí recibe un mensaje por cada reserva y cancelación. Detalle en
 [docs/avisos-dueno.md](docs/avisos-dueno.md).
+
+## Docker y Railway
+
+`make docker-up` levanta base + bot en contenedores, como en producción. Configuración
+de Railway en [docs/deploy.md](docs/deploy.md).
 
 ## Notas
 

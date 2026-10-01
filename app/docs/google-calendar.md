@@ -23,7 +23,7 @@ Calendar **no** es la fuente de verdad: lo es Postgres (ver
 
 | Qué | Dónde |
 |---|---|
-| JSON de la cuenta de servicio | `GOOGLE_APPLICATION_CREDENTIALS=secrets/google-sa.json` (la carpeta `secrets/` está en `.gitignore`) |
+| JSON de la cuenta de servicio | `GOOGLE_APPLICATION_CREDENTIALS=secrets/google-sa.json` en local (la carpeta `secrets/` está en `.gitignore`), o `GOOGLE_CREDENTIALS_JSON` con el contenido del JSON donde no se pueden subir archivos (Railway). Si están las dos, gana la segunda |
 | Calendario del negocio | `google_calendar_id` en el YAML, o `GOOGLE_CALENDAR_ID`, que tiene prioridad (`internal/bootstrap/bootstrap.go:79`) |
 
 Sin calendario configurado, el bot funciona igual que antes. Con calendario pero sin

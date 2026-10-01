@@ -89,7 +89,7 @@ una réplica. La cola por chat en memoria de la Fase 0 solo sirve con un proceso
 | Config del negocio | YAML (`tenants/*.yaml`) → se guarda en `tenants.config` al arrancar | ✅ |
 | Calendar | `google.golang.org/api/calendar/v3` con cuenta de servicio. Ver [google-calendar.md](google-calendar.md) | ✅ |
 | WhatsApp | HTTP directo a Meta Cloud API | Fase 2 |
-| Deploy | Dockerfile multi-stage → `distroless/static` | Fase 1 |
+| Deploy | Dockerfile multi-stage → `distroless/static` (52 MB), Railway. Ver [deploy.md](deploy.md) | ✅ imagen / Railway pendiente |
 
 **Cambio respecto del plan:** se postergó `sqlc`. Con ~10 queries, escribirlas con
 `pgx` evita una herramienta y un paso de generación. Conviene reevaluarlo si las

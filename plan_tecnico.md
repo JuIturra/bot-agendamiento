@@ -100,7 +100,10 @@ Gemini. Falta probar consultar y cancelar desde Telegram.
   de reserva.
 - [ ] `derivar_a_humano` y el estado `humano`.
 - [ ] Inbox con debounce, dedupe y lock por conversación.
-- [ ] Deploy en Railway (webhook de Telegram, Postgres gestionado).
+- [ ] Deploy en Railway (Postgres gestionado). Imagen Docker lista y verificada en
+  local (2026-09-30); falta el repo en GitHub y el primer deploy. Se usa long polling
+  en vez de webhook mientras haya una sola réplica (ver
+  [deploy.md](app/docs/deploy.md)).
 - [ ] Job de purga y retención.
 
 **Listo cuando:** el bot corre 24/7 en Railway, las reservas aparecen en el Google

@@ -7,6 +7,7 @@ decisiones abiertas, ver el [README de la raíz](../../README.md).
 | Documento | Tema |
 |---|---|
 | [arquitectura.md](arquitectura.md) | Principios, diagrama, flujo de un mensaje, stack, ejecutables, trampas, tests |
+| [deploy.md](deploy.md) | Imagen Docker, stack local en contenedores y configuración de Railway |
 | [reglas-agenda.md](reglas-agenda.md) | Cómo se calculan los horarios libres y cuándo se acepta una reserva |
 | [modelo-datos.md](modelo-datos.md) | Tablas, prevención de dobles reservas, fuente de verdad, retención |
 | [proveedores-llm.md](proveedores-llm.md) | Cambiar de modelo o proveedor (Anthropic, OpenAI, Gemini, Ollama, compatibles), qué hace cada adaptador y límites de cuota |
