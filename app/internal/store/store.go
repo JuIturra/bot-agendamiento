@@ -79,6 +79,13 @@ func (s *Store) UpsertTenant(ctx context.Context, c *tenant.Config) (string, err
 	return id, err
 }
 
+// TenantID busca un negocio por slug, sin modificarlo.
+func (s *Store) TenantID(ctx context.Context, slug string) (string, error) {
+	var id string
+	err := s.pool.QueryRow(ctx, `SELECT id FROM tenants WHERE slug = $1`, slug).Scan(&id)
+	return id, err
+}
+
 // UpsertCustomer identifica al cliente por canal e id externo. El nombre se
 // actualiza solo si llega uno nuevo.
 func (s *Store) UpsertCustomer(ctx context.Context, tenantID, canal, externalID, nombre string) (string, error) {

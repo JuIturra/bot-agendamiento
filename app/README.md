@@ -65,6 +65,12 @@ Con `CODIGO_DUENO=<secreto>` en `.env`, el dueño le escribe al bot `/dueno <sec
 desde ahí recibe un mensaje por cada reserva y cancelación. Detalle en
 [docs/avisos-dueno.md](docs/avisos-dueno.md).
 
+## Panel del operador
+
+`make panel` levanta solo el panel en http://127.0.0.1:8080 (requiere `PANEL_PASSWORD`
+en `.env`; usuario `admin`). En producción lo sirve el mismo servidor del bot. Detalle
+en [docs/panel.md](docs/panel.md).
+
 ## Docker y Railway
 
 `make docker-up` levanta base + bot en contenedores, como en producción. Configuración

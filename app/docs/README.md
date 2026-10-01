@@ -10,6 +10,7 @@ decisiones abiertas, ver el [README de la raíz](../../README.md).
 | [deploy.md](deploy.md) | Imagen Docker, stack local en contenedores y configuración de Railway |
 | [reglas-agenda.md](reglas-agenda.md) | Cómo se calculan los horarios libres y cuándo se acepta una reserva |
 | [modelo-datos.md](modelo-datos.md) | Tablas, prevención de dobles reservas, fuente de verdad, retención |
+| [panel.md](panel.md) | Panel web del operador: páginas, cómo se usa en local y en Railway, seguridad |
 | [proveedores-llm.md](proveedores-llm.md) | Cambiar de modelo o proveedor (Anthropic, OpenAI, Gemini, Ollama, compatibles), qué hace cada adaptador y límites de cuota |
 | [conversacion-y-llm.md](conversacion-y-llm.md) | Tools, system prompt, historial, parámetros del modelo, cache, casos límite, prompt injection |
 | [canales.md](canales.md) | Interfaz de canal, Telegram, WhatsApp Cloud API |

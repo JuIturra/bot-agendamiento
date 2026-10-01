@@ -35,6 +35,10 @@ type Config struct {
 	// CodigoDueno es el secreto con que el dueño se registra para recibir avisos
 	// ("/dueno <código>" al bot). Vacío = registro desactivado.
 	CodigoDueno string
+	// Panel web del operador. Sin PanelPassword el panel no se publica (/healthz sí).
+	// Port lo define Railway; en local, 8080.
+	PanelUsuario, PanelPassword string
+	Port                        string
 	// Límites de cuota del proveedor (0 = sin límite). Ver internal/llm/limit.
 	LLMLimits LLMLimits
 	LogLevel  slog.Level
@@ -68,6 +72,9 @@ func Load(required ...string) (Config, error) {
 		GoogleCredentialsJSON: os.Getenv("GOOGLE_CREDENTIALS_JSON"),
 		GoogleCalendarID:      os.Getenv("GOOGLE_CALENDAR_ID"),
 		CodigoDueno:           os.Getenv("CODIGO_DUENO"),
+		PanelUsuario:          os.Getenv("PANEL_USUARIO"),
+		PanelPassword:         os.Getenv("PANEL_PASSWORD"),
+		Port:                  os.Getenv("PORT"),
 		LLMLimits: LLMLimits{
 			ResetZone: os.Getenv("LLM_LIMITE_ZONA_RESET"),
 		},
@@ -89,6 +96,9 @@ func Load(required ...string) (Config, error) {
 	}
 	if c.LLMLimits.ResetZone == "" {
 		c.LLMLimits.ResetZone = "America/Los_Angeles"
+	}
+	if c.Port == "" {
+		c.Port = "8080"
 	}
 	if c.TenantFile == "" {
 		c.TenantFile = "tenants/barberia-demo.yaml"

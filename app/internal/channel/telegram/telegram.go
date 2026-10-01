@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -35,6 +36,18 @@ type Bot struct {
 	http   *http.Client
 	log    *slog.Logger
 	offset int64
+	// ultimoPoll es la hora (unix nano) del último getUpdates exitoso: indica si el
+	// bot sigue conectado a Telegram.
+	ultimoPoll atomic.Int64
+}
+
+// UltimoPoll devuelve la hora del último getUpdates exitoso (cero si no hubo).
+func (b *Bot) UltimoPoll() time.Time {
+	n := b.ultimoPoll.Load()
+	if n == 0 {
+		return time.Time{}
+	}
+	return time.Unix(0, n)
 }
 
 func New(token string, log *slog.Logger) *Bot {
@@ -106,6 +119,7 @@ func (b *Bot) Run(ctx context.Context, h Handler) error {
 			}
 			continue
 		}
+		b.ultimoPoll.Store(time.Now().UnixNano())
 		for _, u := range updates {
 			// El offset confirma el update a Telegram: no se vuelve a recibir.
 			b.offset = u.UpdateID + 1

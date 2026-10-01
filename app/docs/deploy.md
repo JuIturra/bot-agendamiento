@@ -39,7 +39,9 @@ uno de ellos (ver [canales.md](canales.md#telegram-implementado)).
 ## Railway
 
 Archivo `railway.json` (en `app/`): builder `DOCKERFILE`, 1 réplica, reinicio
-`ON_FAILURE` con hasta 10 reintentos.
+`ON_FAILURE` con hasta 10 reintentos, y health check en `/healthz`. Railway espera
+ese 200 antes de dar por bueno un deploy; responde apenas el proceso conectó a la
+base, aplicó migraciones y cargó el negocio.
 
 **Por qué 1 réplica:** el bot usa long polling y Telegram solo admite un lector por
 bot. Con más réplicas, habría que pasar a webhook (pendiente para cuando llegue
@@ -73,6 +75,10 @@ Railway.
 | `GOOGLE_CREDENTIALS_JSON` | **El contenido** del JSON de la cuenta de servicio (Railway no permite subir archivos) |
 | `GOOGLE_CALENDAR_ID` | Calendario del negocio |
 | `CODIGO_DUENO` | Código para `/dueno` |
+| `PANEL_PASSWORD` | Contraseña del panel del operador (sin ella no se publica). `PANEL_USUARIO` es opcional; default `admin` |
+
+Para abrir el panel, el servicio necesita un dominio público: **Settings → Networking
+→ Generate Domain**. Railway define `PORT` solo y el servidor lo usa.
 
 6. Deploy. En los logs debería aparecer `bot de Telegram escuchando`.
 

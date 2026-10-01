@@ -5,10 +5,12 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
+	"time"
 
 	_ "time/tzdata" // la imagen distroless no trae zonas horarias
 
@@ -17,6 +19,7 @@ import (
 	"agendamiento/internal/config"
 	"agendamiento/internal/engine"
 	"agendamiento/internal/notify"
+	"agendamiento/internal/panel"
 )
 
 func main() {
@@ -61,6 +64,24 @@ func run() error {
 		log.Warn("CODIGO_DUENO vacío: el dueño no puede registrarse para recibir avisos")
 	}
 
+	// Panel del operador y /healthz, en el mismo proceso.
+	srv, err := panelServer(cfg, app, bot, log)
+	if err != nil {
+		return err
+	}
+	go func() {
+		log.Info("panel escuchando", "port", cfg.Port, "activo", cfg.PanelPassword != "")
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Error("panel", "err", err)
+			stop() // sin HTTP, Railway no puede chequear la salud: mejor salir y reiniciar
+		}
+	}()
+	defer func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		srv.Shutdown(ctx)
+	}()
+
 	return bot.Run(ctx, func(ctx context.Context, m telegram.Message) (string, error) {
 		// "/dueno <código>" no pasa por el modelo.
 		if resp, ok, err := registro.Handle(ctx, m.ChatID, m.Texto); ok {
@@ -74,4 +95,32 @@ func run() error {
 			Enviado:        m.Enviado,
 		})
 	})
+}
+
+func panelServer(cfg config.Config, app *bootstrap.App, bot *telegram.Bot, log *slog.Logger) (*http.Server, error) {
+	zona, err := time.LoadLocation(cfg.LLMLimits.ResetZone)
+	if err != nil {
+		return nil, err
+	}
+	eng := app.Engine
+	p, err := panel.New(panel.Config{
+		Datos: app.Store, TenantID: eng.TenantID, Negocio: eng.Tenant.Nombre, Loc: eng.Tenant.Location(),
+		ClaveLLM: eng.LLM.Name(), LimiteRPD: cfg.LLMLimits.RPD, ZonaReset: zona,
+		UltimoPoll: bot.UltimoPoll,
+		Usuario:    cfg.PanelUsuario, Password: cfg.PanelPassword,
+		Log: log.With("componente", "panel"),
+	})
+	if err != nil {
+		return nil, err
+	}
+	if cfg.PanelPassword == "" {
+		log.Warn("PANEL_PASSWORD vacío: el panel no se publica (solo /healthz)")
+	}
+	return &http.Server{
+		Addr:              ":" + cfg.Port,
+		Handler:           p.Handler(),
+		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       30 * time.Second,
+		WriteTimeout:      30 * time.Second,
+	}, nil
 }

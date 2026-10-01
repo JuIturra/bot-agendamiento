@@ -5,7 +5,7 @@
 # bot real procesaría sus datos (p. ej. sincronizar con Calendar un negocio de test).
 TEST_DATABASE_URL ?= postgres://agenda:agenda@localhost:5433/agenda_test?sslmode=disable
 
-.PHONY: db-up db-down run chat test test-integration build gemini-modelos calendar-check docker-build docker-up docker-logs
+.PHONY: db-up db-down run chat test test-integration build gemini-modelos calendar-check docker-build docker-up docker-logs panel
 
 db-up:
 	docker compose up -d --wait db
@@ -48,3 +48,6 @@ docker-up: ## levanta base + bot en contenedores (como en Railway)
 
 docker-logs:
 	docker compose --profile bot logs -f bot
+
+panel: ## solo el panel del operador, sin bot (http://127.0.0.1:8080)
+	go run ./cmd/panel

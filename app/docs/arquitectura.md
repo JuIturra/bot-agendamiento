@@ -112,6 +112,8 @@ de infraestructura (se registran en el log y el modelo recibe un error genérico
   `-usuario otro` se simula un cliente nuevo.
 - `cmd/calcheck` (`make calendar-check`): verifica la cuenta de servicio y el acceso al
   calendario.
+- `cmd/panel` (`make panel`): solo el panel del operador, sin bot. `cmd/server` también
+  sirve el panel, en `PORT` (ver [panel.md](panel.md)).
 
 Los dos primeros usan `bootstrap.Build` (`internal/bootstrap/bootstrap.go:26`): carga el YAML,
 conecta, migra, guarda el negocio y arma el motor.
@@ -153,6 +155,7 @@ app/
 │   ├── calendar/        # Google Calendar: cliente + sincronizador
 │   ├── notify/          # avisos al dueño + registro con /dueno
 │   ├── bg/              # ciclo común de los procesos en segundo plano
+│   ├── panel/           # panel web del operador (handlers + plantillas)
 │   ├── engine/          # loop de conversación
 │   ├── llm/             # interfaz Provider, system prompt, prefijo de fecha
 │   │   ├── anthropic/   # adaptador Claude

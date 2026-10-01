@@ -11,6 +11,7 @@ import (
 
 	"agendamiento/internal/booking"
 	"agendamiento/internal/llm/limit"
+	"agendamiento/internal/panel"
 	"agendamiento/internal/tenant"
 )
 
@@ -307,5 +308,60 @@ func TestCicloAvisosDueno(t *testing.T) {
 	}
 	if got := buscar(r.ID); got != "no" {
 		t.Fatalf("después de un error se espera el backoff: %s", got)
+	}
+}
+
+// Las consultas del panel corren y cuentan bien sobre una conversación real del motor.
+func TestConsultasPanel(t *testing.T) {
+	st := openTest(t)
+	svc, clientes := setup(t, st)
+	ctx := context.Background()
+	conv, err := st.ActiveConversation(ctx, svc.TenantID, clientes[0], time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	st.AddMessage(ctx, conv.ID, "user", map[string]string{"text": "[lunes 05-10-2026 a las 09:00]\nhola, quiero hora"}, Usage{})
+	st.AddMessage(ctx, conv.ID, "tool", map[string]any{"name": "agendar", "input": map[string]string{"servicio": "Corte"}, "result": "OK. Reserva confirmada.", "is_error": false}, Usage{})
+	st.AddMessage(ctx, conv.ID, "assistant", map[string]string{"text": "Listo"}, Usage{In: 100, Out: 20, CacheRead: 50})
+	inicio := time.Date(2026, 10, 6, 11, 0, 0, 0, svc.Cfg.Location())
+	if _, err := svc.Agendar(ctx, clientes[0], "Corte", inicio, "Ana"); err != nil {
+		t.Fatal(err)
+	}
+
+	desde := time.Now().Add(-time.Hour)
+	r, err := st.Resumen(ctx, svc.TenantID, desde, desde, "x/y")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if r.Conversaciones != 1 || r.ConversacionesConReserva != 1 || r.MensajesCliente != 1 || r.Reservas != 1 ||
+		r.TokensIn != 100 || r.TokensOut != 20 || r.UltimoMensaje.IsZero() || r.CalendarActivo || r.DuenoRegistrado {
+		t.Errorf("resumen = %+v", r)
+	}
+
+	cs, err := st.Conversaciones(ctx, svc.TenantID, 10)
+	if err != nil || len(cs) != 1 {
+		t.Fatalf("conversaciones = %v, %v", cs, err)
+	}
+	if !cs[0].Agendo || cs[0].MensajesCliente != 1 || cs[0].Vista != "hola, quiero hora" {
+		t.Errorf("fila = %+v", cs[0])
+	}
+
+	c, err := st.Conversacion(ctx, svc.TenantID, conv.ID)
+	if err != nil || len(c.Mensajes) != 3 {
+		t.Fatalf("conversación = %+v, %v", c, err)
+	}
+	if tool := c.Mensajes[1]; tool.Tool != "agendar" || tool.Input != `{"servicio": "Corte"}` || tool.IsError {
+		t.Errorf("mensaje de tool = %+v", tool)
+	}
+	// Otro negocio no puede ver esta conversación, y un id basura es "no encontrada".
+	for _, args := range [][2]string{{"00000000-0000-0000-0000-000000000000", conv.ID}, {svc.TenantID, "basura"}} {
+		if _, err := st.Conversacion(ctx, args[0], args[1]); !errors.Is(err, panel.ErrNoEncontrada) {
+			t.Errorf("Conversacion(%v) err = %v", args, err)
+		}
+	}
+
+	rs, err := st.Reservas(ctx, svc.TenantID, desde, 10)
+	if err != nil || len(rs) != 1 || rs[0].Cliente != "Ana" {
+		t.Errorf("reservas = %+v, %v", rs, err)
 	}
 }

@@ -1,0 +1,23 @@
+{{define "contenido"}}
+<h1>Conversaciones</h1>
+<p class="sub">Las 100 más recientes. Una conversación se cierra tras 24 h sin mensajes.</p>
+<div class="tabla">
+{{if .Datos}}
+<table>
+  <thead><tr><th>Cliente</th><th>Último mensaje</th><th>Vista previa</th><th class="num">Msjs</th><th class="num">Tokens</th><th>Resultado</th></tr></thead>
+  <tbody>
+  {{range .Datos}}
+  <tr>
+    <td><a href="/conversaciones/{{.ID}}">{{if .Cliente}}{{.Cliente}}{{else}}(sin nombre){{end}}</a><div class="muted">{{.Canal}}</div></td>
+    <td class="nowrap">{{fecha .Ultimo}}<div class="muted">{{hace .Ultimo}}</div></td>
+    <td class="muted">{{.Vista}}</td>
+    <td class="num">{{.MensajesCliente}}</td>
+    <td class="num">{{miles .TokensIn}}</td>
+    <td>{{if .Agendo}}<span class="tag ok">reservó</span>{{end}}{{if eq .Estado "humano"}} <span class="tag warn">atiende una persona</span>{{end}}</td>
+  </tr>
+  {{end}}
+  </tbody>
+</table>
+{{else}}<div class="vacio">Todavía no hay conversaciones.</div>{{end}}
+</div>
+{{end}}

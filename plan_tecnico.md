@@ -123,8 +123,10 @@ Calendar del dueño y este recibe un aviso por cada una.
 - [ ] Panel mínimo (o edición de YAML + comando de carga) para configurar un negocio
       nuevo en menos de 30 minutos.
 - [ ] Resumen diario al dueño.
-- [ ] Métricas por tenant: conversaciones, reservas, costo LLM y tasa de conversión (el
-      argumento de venta para renovar).
+- [ ] Métricas por tenant: conversaciones, reservas, tokens y tasa de conversión ya
+      están en el panel del operador (2026-09-30, [panel.md](app/docs/panel.md)).
+      Falta el costo en pesos y la vista para el dueño (el argumento de venta para
+      renovar).
 - [ ] Varios profesionales o recursos por negocio.
 
 ---

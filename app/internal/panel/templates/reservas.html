@@ -1,0 +1,29 @@
+{{define "contenido"}}
+<h1>Reservas</h1>
+<p class="sub">Próximas y de los últimos 7 días, de la más lejana a la más antigua.</p>
+<div class="tabla">
+{{if .Datos}}
+<table>
+  <thead><tr><th>Cuándo</th><th>Servicio</th><th>Cliente</th><th>Estado</th><th>Calendar</th><th>Aviso al dueño</th></tr></thead>
+  <tbody>
+  {{range .Datos}}
+  <tr>
+    <td class="nowrap">{{fecha .Inicio}}<div class="muted">creada {{hace .Creada}}</div></td>
+    <td>{{.Servicio}}</td>
+    <td>{{.Cliente}}<div class="muted">{{.Canal}}</div></td>
+    <td>{{if eq .Estado "confirmada"}}<span class="tag ok">confirmada</span>{{else if eq .Estado "cancelada"}}<span class="tag bad">cancelada</span>{{else}}<span class="tag warn">{{.Estado}}</span>{{end}}</td>
+    <td>{{if .CalendarError}}<span class="tag bad">error</span><div class="err">{{.CalendarError}}</div>
+        {{else if .EnCalendar}}<span class="tag ok">en el calendario</span>
+        {{else if eq .Estado "confirmada"}}<span class="tag warn">pendiente</span>
+        {{else}}<span class="muted">—</span>{{end}}</td>
+    <td>{{if .AvisoError}}<span class="tag bad">error</span><div class="err">{{.AvisoError}}</div>
+        {{else if .AvisadaCancel}}<span class="tag ok">cancelación avisada</span>
+        {{else if .Avisada}}<span class="tag ok">avisada</span>
+        {{else}}<span class="muted">—</span>{{end}}</td>
+  </tr>
+  {{end}}
+  </tbody>
+</table>
+{{else}}<div class="vacio">No hay reservas en este período.</div>{{end}}
+</div>
+{{end}}

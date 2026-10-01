@@ -1,0 +1,48 @@
+{{define "contenido"}}{{with .Datos}}
+<h1>Resumen</h1>
+<p class="sub">Últimos {{.Dias}} días{{if nonulo .UltimoMensaje}} · último mensaje de un cliente {{hace .UltimoMensaje}}{{end}}</p>
+
+<div class="grid">
+  <div class="card"><div class="n">{{.Conversaciones}}</div><div class="l">conversaciones</div><div class="d">{{.MensajesCliente}} mensajes de clientes</div></div>
+  <div class="card"><div class="n">{{.ConversacionesConReserva}}</div><div class="l">terminaron en reserva</div><div class="d">{{.Conversion}} de las conversaciones</div></div>
+  <div class="card"><div class="n">{{.Reservas}}</div><div class="l">reservas hechas</div><div class="d">{{.Cancelaciones}} canceladas</div></div>
+  <div class="card"><div class="n">{{.Proximas}}</div><div class="l">próximas reservas</div><div class="d"><a href="/reservas">ver reservas</a></div></div>
+  <div class="card"><div class="n">{{.LLMHoy}}{{if .LimiteRPD}}<span class="muted" style="font-size:16px"> / {{.LimiteRPD}}</span>{{end}}</div><div class="l">requests al LLM hoy</div><div class="d">{{if .LimiteRPD}}límite diario de la cuota{{else}}sin límite configurado{{end}}</div></div>
+  <div class="card"><div class="n">{{miles .TokensIn}}</div><div class="l">tokens de entrada</div><div class="d">{{miles .TokensOut}} de salida</div></div>
+</div>
+
+<h2>Salud</h2>
+<div class="salud">
+  <div class="card">
+    {{if .ConTelegram}}
+    <div><strong>Telegram</strong><div class="muted">último contacto {{hace .UltimoPoll}}</div></div>
+    {{if .PollViejo}}<span class="tag bad">sin conexión</span>{{else}}<span class="tag ok">conectado</span>{{end}}
+    {{else}}
+    <div><strong>Telegram</strong><div class="muted">este panel corre sin el bot: el estado de la conexión se ve en el panel del servidor</div></div>
+    <span class="tag warn">no disponible</span>
+    {{end}}
+  </div>
+  <div class="card">
+    <div><strong>Google Calendar</strong>
+      {{if not .CalendarActivo}}<div class="muted">no configurado para este negocio</div>
+      {{else}}<div class="muted">{{.CalendarPendientes}} eventos por sincronizar</div>
+        {{if .CalendarUltimoError}}<div class="err">{{.CalendarUltimoError}}</div>{{end}}{{end}}
+    </div>
+    {{if not .CalendarActivo}}<span class="tag warn">inactivo</span>
+    {{else if .CalendarConError}}<span class="tag bad">{{.CalendarConError}} con error</span>
+    {{else if .CalendarPendientes}}<span class="tag warn">pendiente</span>
+    {{else}}<span class="tag ok">al día</span>{{end}}
+  </div>
+  <div class="card">
+    <div><strong>Avisos al dueño</strong>
+      {{if not .DuenoRegistrado}}<div class="muted">el dueño no se ha registrado (/dueno)</div>
+      {{else}}<div class="muted">{{.AvisosPendientes}} avisos por enviar</div>
+        {{if .AvisoUltimoError}}<div class="err">{{.AvisoUltimoError}}</div>{{end}}{{end}}
+    </div>
+    {{if not .DuenoRegistrado}}<span class="tag warn">sin dueño</span>
+    {{else if .AvisosConError}}<span class="tag bad">{{.AvisosConError}} con error</span>
+    {{else if .AvisosPendientes}}<span class="tag warn">pendiente</span>
+    {{else}}<span class="tag ok">al día</span>{{end}}
+  </div>
+</div>
+{{end}}{{end}}

@@ -1,0 +1,20 @@
+{{define "contenido"}}{{with .Datos}}
+<p><a href="/conversaciones">← Conversaciones</a></p>
+<h1>{{if .Cliente}}{{.Cliente}}{{else}}(sin nombre){{end}}</h1>
+<p class="sub">{{.Canal}} · empezó {{fecha .Inicio}} · {{.MensajesCliente}} mensajes del cliente · {{miles .TokensIn}} tokens de entrada, {{miles .TokensOut}} de salida{{if .Agendo}} · <span class="tag ok">reservó</span>{{end}}</p>
+<div class="chat">
+{{range .Mensajes}}
+  {{if eq .Rol "tool"}}
+  <div class="msg tool">
+    <div class="meta">{{hora .At}} · herramienta <strong>{{.Tool}}</strong> {{if .IsError}}<span class="tag bad">error</span>{{else}}<span class="tag ok">ok</span>{{end}}</div>
+    <pre>input: {{.Input}}</pre>
+    <pre>{{.Result}}</pre>
+  </div>
+  {{else if eq .Rol "user"}}
+  <div class="msg user"><div class="meta">{{hora .At}} · cliente</div>{{.Texto}}</div>
+  {{else}}
+  <div class="msg assistant"><div class="meta">{{hora .At}} · bot · {{miles .TokensIn}} tokens de entrada{{if .Cache}} ({{miles .Cache}} de cache){{end}}, {{miles .TokensOu}} de salida</div>{{.Texto}}</div>
+  {{end}}
+{{end}}
+</div>
+{{end}}{{end}}

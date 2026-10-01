@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>{{.Titulo}} · {{.Negocio}}</title>
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --text: #1b1f24; --muted: #5f6b7a; --line: #e3e7ec;
+  --accent: #2f5bd3; --ok: #1f7a4d; --ok-bg: #e6f4ec; --warn: #9a5b00; --warn-bg: #fdf1dc;
+  --bad: #b3261e; --bad-bg: #fbe9e7; --user-bg: #eef2fb; --bot-bg: #ffffff; --tool-bg: #f3f4f6;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111418; --panel: #1a1e24; --text: #e6e9ee; --muted: #9aa5b1; --line: #2a3038;
+    --accent: #7ea2ff; --ok: #6fd3a0; --ok-bg: #16301f; --warn: #f0b85a; --warn-bg: #33270f;
+    --bad: #ff8a80; --bad-bg: #3a1a18; --user-bg: #1d2638; --bot-bg: #1a1e24; --tool-bg: #20252c;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+header { background: var(--panel); border-bottom: 1px solid var(--line); }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+.top { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; min-height: 56px; }
+.top strong { font-size: 16px; }
+nav { display: flex; gap: 4px; flex-wrap: wrap; }
+nav a { color: var(--muted); text-decoration: none; padding: 6px 10px; border-radius: 6px; }
+nav a.on { color: var(--text); background: var(--bg); font-weight: 600; }
+main { padding: 24px 0 48px; }
+h1 { font-size: 22px; margin: 0 0 4px; }
+h2 { font-size: 15px; margin: 28px 0 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+a { color: var(--accent); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.card .n { font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.card .l { color: var(--muted); font-size: 13px; }
+.card .d { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.tabla { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.nowrap { white-space: nowrap; }
+.muted { color: var(--muted); }
+.tag { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.ok { color: var(--ok); background: var(--ok-bg); }
+.warn { color: var(--warn); background: var(--warn-bg); }
+.bad { color: var(--bad); background: var(--bad-bg); }
+.salud { display: grid; gap: 10px; }
+.salud .card { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.err { font-family: var(--mono); font-size: 12px; color: var(--bad); word-break: break-word; margin-top: 4px; }
+.chat { display: flex; flex-direction: column; gap: 10px; max-width: 760px; }
+.msg { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; white-space: pre-wrap; word-break: break-word; }
+.msg.user { background: var(--user-bg); align-self: flex-start; max-width: 85%; }
+.msg.assistant { background: var(--bot-bg); align-self: flex-end; max-width: 85%; }
+.msg.tool { background: var(--tool-bg); font-size: 13px; border-style: dashed; }
+.meta { color: var(--muted); font-size: 12px; margin-bottom: 4px; white-space: normal; }
+pre { margin: 6px 0 0; font-family: var(--mono); font-size: 12px; white-space: pre-wrap; word-break: break-word; }
+.vacio { color: var(--muted); padding: 24px; text-align: center; }
+footer { color: var(--muted); font-size: 12px; padding: 0 0 24px; }
+</style>
+</head>
+<body>
+<header><div class="wrap top">
+  <strong>{{.Negocio}}</strong>
+  <nav>
+    <a href="/" {{if eq .Seccion "resumen"}}class="on"{{end}}>Resumen</a>
+    <a href="/conversaciones" {{if or (eq .Seccion "conversaciones") (eq .Seccion "conversacion")}}class="on"{{end}}>Conversaciones</a>
+    <a href="/reservas" {{if eq .Seccion "reservas"}}class="on"{{end}}>Reservas</a>
+  </nav>
+</div></header>
+<main><div class="wrap">
+{{template "contenido" .}}
+</div></main>
+<footer><div class="wrap">Actualizado {{fecha .Ahora}} · recarga la página para ver lo último</div></footer>
+</body>
+</html>
