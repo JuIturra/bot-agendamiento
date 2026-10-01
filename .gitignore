@@ -1,0 +1,8 @@
+# Secretos: nunca al repositorio.
+.env
+.env.*
+!.env.example
+**/secrets/
+
+# Artefactos locales.
+app/bin/

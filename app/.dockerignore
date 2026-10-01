@@ -1,0 +1,7 @@
+# Secretos y artefactos locales nunca entran a la imagen.
+.env
+.env.*
+secrets/
+bin/
+docs/
+*_test.go

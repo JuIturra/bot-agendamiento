@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: agendamiento_db
+    environment:
+      POSTGRES_USER: agenda
+      POSTGRES_PASSWORD: agenda
+      POSTGRES_DB: agenda
+    ports:
+      - "5433:5432" # 5432 suele estar ocupado por otro Postgres local
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agenda"]
+      interval: 2s
+      retries: 15
+
+  # El bot en un contenedor, igual que en Railway. Va en un perfil para que
+  # `make db-up` siga levantando solo la base: `make docker-up` levanta los dos.
+  bot:
+    profiles: ["bot"]
+    build: .
+    env_file: .env
+    environment:
+      # Dentro de la red de compose la base se llama "db" y escucha en 5432.
+      DATABASE_URL: postgres://agenda:agenda@db:5432/agenda?sslmode=disable
+      # El JSON de Google se monta como archivo de solo lectura.
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/google-sa.json
+    volumes:
+      - ./secrets:/secrets:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+
+volumes:
+  pgdata:

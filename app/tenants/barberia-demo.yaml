@@ -1,0 +1,68 @@
+# Negocio de demostración. Los datos son ficticios.
+slug: barberia-demo
+nombre: Barbería El Filo
+zona_horaria: America/Santiago
+# proveedor/modelo: anthropic/claude-opus-5, openai/gpt-5, ollama/qwen3:8b...
+# Vacío = anthropic/claude-opus-5. La variable LLM_MODEL lo pisa.
+modelo_llm: ""
+# Calendario del dueño, compartido con la cuenta de servicio. Vacío = sin Calendar.
+# La variable GOOGLE_CALENDAR_ID lo pisa (mejor para no dejar un email en el YAML).
+google_calendar_id: ""
+
+descripcion: >
+  Barbería de barrio en Ñuñoa. Cortes clásicos y modernos, arreglo de barba y
+  afeitado con navaja. Atienden Matías y Seba.
+direccion: Av. Irarrázaval 3456, local 2, Ñuñoa, Santiago
+telefono: "+56 9 1234 5678"
+medios_pago: [efectivo, débito, crédito, transferencia]
+
+# Rangos HH:MM-HH:MM. Días sin rangos = cerrado. Claves sin tilde.
+horario:
+  lunes: []
+  martes: ["10:00-14:00", "15:00-20:00"]
+  miercoles: ["10:00-14:00", "15:00-20:00"]
+  jueves: ["10:00-14:00", "15:00-20:00"]
+  viernes: ["10:00-14:00", "15:00-20:30"]
+  sabado: ["10:00-18:00"]
+  domingo: []
+
+intervalo_minutos: 30          # cada cuánto puede empezar una hora
+buffer_minutos: 10             # limpieza entre clientes
+anticipacion_minima_minutos: 60
+dias_maximos_adelanto: 21
+# Feriados de ejemplo, no una lista oficial.
+feriados: ["2026-10-12", "2026-10-31", "2026-12-08", "2026-12-25"]
+
+servicios:
+  - nombre: Corte de pelo
+    duracion_minutos: 30
+    precio: 12000
+    descripcion: Incluye lavado.
+  - nombre: Corte y barba
+    duracion_minutos: 60
+    precio: 18000
+  - nombre: Arreglo de barba
+    duracion_minutos: 30
+    precio: 8000
+  - nombre: Afeitado con navaja
+    duracion_minutos: 30
+    precio: 10000
+    descripcion: Con toalla caliente.
+  - nombre: Corte niño
+    duracion_minutos: 30
+    precio: 9000
+    descripcion: Hasta 12 años.
+
+preguntas_frecuentes:
+  - pregunta: ¿Atienden sin hora?
+    respuesta: Sí, si hay un espacio libre, pero recomendamos agendar, sobre todo viernes y sábado.
+  - pregunta: ¿Hay estacionamiento?
+    respuesta: No tenemos estacionamiento propio; hay estacionamientos en la calle y uno pagado a media cuadra.
+  - pregunta: ¿Puedo elegir barbero?
+    respuesta: Por ahora el bot no agenda con un barbero específico. Si tienes preferencia, indícalo al llegar y se intenta respetar.
+  - pregunta: ¿Qué pasa si llego tarde?
+    respuesta: Esperamos hasta 10 minutos. Después de eso puede que haya que reagendar.
+
+instrucciones_extra: >
+  Si alguien pregunta por tinturas o permanentes, explica que no hacemos esos
+  servicios.
