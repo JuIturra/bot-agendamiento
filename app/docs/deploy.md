@@ -1,8 +1,9 @@
 # Deploy (Docker y Railway)
 
 > **Estado:** imagen Docker verificada en local el 2026-09-30: construye, arranca con
-> base + Calendar + Telegram en contenedores y se apaga limpio con SIGTERM. **Railway:
-> configurado pero todavía no desplegado.** Última actualización: 2026-09-30.
+> base + Calendar + Telegram en contenedores y se apaga limpio con SIGTERM.
+> **Desplegado en Railway** el 2026-09-30, según informó el usuario. No revisé los
+> logs de Railway. Última actualización: 2026-09-30.
 
 ## Imagen
 
@@ -54,9 +55,11 @@ Railway.
 
 1. **New Project → Deploy from GitHub repo** → elegir el repositorio.
 2. En el servicio: **Settings → Root Directory = `/app`**.
-3. **Settings → Config-as-code → `/app/railway.json`**. La documentación de Railway no
-   aclara si lo encuentra solo cuando el código está en una subcarpeta, así que se
-   indica la ruta explícita (consultado el 2026-09-30).
+3. **Settings → Config-as-code → `/app/railway.json`**. Hacen falta **los dos**
+   ajustes. **Verificado** en el primer deploy (2026-09-30): sin ellos, Railway analiza
+   la raíz del repo, no encuentra el Dockerfile ni el `railway.json` y cae en Railpack
+   (`Railpack could not determine how to build the app`). Si en el log de build aparece
+   "Railpack", falta alguno de los dos.
 4. **New → Database → PostgreSQL** en el mismo proyecto.
 5. Variables del servicio del bot:
 
@@ -79,6 +82,25 @@ Railway.
   `btree_gist` viene con Postgres, pero requiere permisos. Si falla, el bot no
   arranca y el error queda en el log;
 - precios y límites de uso vigentes de Railway.
+
+### Serverless (apagado por inactividad)
+
+Railway puede apagar un servicio inactivo (función "Serverless", antes "App
+Sleeping"; opcional y por servicio). Según su documentación (consultada el
+2026-09-30): **se considera inactivo tras 5 minutos sin tráfico saliente** y **se
+despierta con tráfico entrante** (internet o red privada del proyecto).
+
+Con long polling eso no sirve:
+- El bot sale a Telegram cada ~30 s, así que **nunca queda inactivo**: queda prendido
+  24/7 y consume recursos todo el tiempo.
+- Si llegara a dormirse, **no despertaría con los mensajes de los clientes**, porque
+  con polling Telegram no le envía nada; es el bot el que pregunta.
+
+Para que "dormir y despertar con un mensaje" funcione hace falta **webhook**:
+Telegram envía cada mensaje a la URL del bot, eso lo despierta, y Telegram reintenta
+mientras arranca. El primer mensaje después de dormir llega con el retraso del
+arranque. **[verificar]** si Serverless está activo en el servicio y el consumo real
+del bot siempre prendido.
 
 ### Después del primer deploy
 
